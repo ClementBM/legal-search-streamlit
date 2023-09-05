@@ -1,7 +1,7 @@
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-from legalsearch.artefacts import INDEX_FOLDER_PATH
+from artefacts import INDEX_FOLDER_PATH
 
 
 def load():
