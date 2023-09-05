@@ -1,9 +1,9 @@
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.document_loaders import CSVLoader
-
-from artefacts import CLIMATE_CASES_CSV, INDEX_FOLDER_PATH
 from langchain.vectorstores import Chroma
+
+from legalsearch.artefacts import CLIMATE_CASES_CSV, INDEX_FOLDER_PATH
 
 
 def build():

@@ -12,10 +12,6 @@ keywords = ["legal", "semantic search", "search engine"]
 include = [
     "LICENSE",
 ]
-packages = [
-    { include = "legalsearch" },
-    { include = "artefacts" },
-]
 
 [tool.poetry.dependencies]
 python = ">3.9.7,<3.11"
