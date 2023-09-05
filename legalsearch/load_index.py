@@ -1,4 +1,4 @@
-from langchain.embeddings.huggingface_hub import HuggingFaceHubEmbeddings
+from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 
 from artefacts import INDEX_FOLDER_PATH
 from langchain.vectorstores import Chroma
@@ -7,7 +7,7 @@ from langchain.vectorstores import Chroma
 def load():
     # Retrieve embedding function from code env resources
     repo_id = "sentence-transformers/all-MiniLM-L6-v2"
-    embeddings = HuggingFaceHubEmbeddings(repo_id=repo_id)
+    embeddings = HuggingFaceEmbeddings(model_name=repo_id)
 
     docsearch = Chroma(
         collection_name="climatecase",
