@@ -1,7 +1,7 @@
 from datetime import date
 import streamlit as st
 
-from artefacts import CLIMATE_CASES_CSV
+from ..artefacts import CLIMATE_CASES_CSV
 from legalsearch.data_preprocessing import load_global_cases
 from legalsearch.load_index import load
 import typing
