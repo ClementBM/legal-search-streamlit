@@ -1,6 +1,7 @@
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
+
 from artefacts import INDEX_FOLDER_PATH
 
 

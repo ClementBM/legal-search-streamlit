@@ -3,7 +3,7 @@ from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.document_loaders import CSVLoader
 from langchain.vectorstores import Chroma
 
-from legalsearch.artefacts import CLIMATE_CASES_CSV, INDEX_FOLDER_PATH
+from artefacts import CLIMATE_CASES_CSV, INDEX_FOLDER_PATH
 
 
 def build():
