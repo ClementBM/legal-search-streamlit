@@ -7,8 +7,9 @@ from legalsearch.load_index import load
 import typing
 from langchain.schema.document import Document
 
-# poetry export -f requirements.txt --output requirements.txt --without-hashes
 # streamlit run legalsearch/app.py [-- script args]
+# https://download.pytorch.org/whl/torch/
+# https://pytorch.org/cppdocs/installing.html
 
 index = load()
 
@@ -22,8 +23,18 @@ def load_data(query: str):
     results: typing.List[Document] = index.search(query, search_type="similarity")
     results_ids = [result.metadata["row"] for result in results]
 
-    return global_cases_df.iloc[results_ids]
+    keywords_search_idx = set(
+        global_cases_df.index[
+            global_cases_df["columns_concatenations"].str.contains(
+                pat=query, na=False, case=False
+            )
+        ]
+    )
 
+    return global_cases_df.iloc[list(set(results_ids).union(keywords_search_idx))]
+
+
+st.set_page_config(layout="wide")
 
 st.title("Search Climate Cases")
 
@@ -70,6 +81,7 @@ data = load_data(search_query)
 
 case_dataframe = st.dataframe(
     data,
+    height=650,
     use_container_width=True,
     column_order=[
         "Title",
