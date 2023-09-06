@@ -10,7 +10,7 @@ from langchain.schema.document import Document
 # streamlit run legalsearch/app.py [-- script args]
 # https://download.pytorch.org/whl/torch/
 # https://pytorch.org/cppdocs/installing.html
-#
+
 # Sqlite3
 # Your system has an unsupported version of sqlite3. Chroma requires sqlite3 >= 3.35.0
 # https://www.sqlite.org/chronology.html
