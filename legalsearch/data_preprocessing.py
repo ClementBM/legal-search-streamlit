@@ -12,24 +12,26 @@ def preprocess_fields(value):
         return []
 
 
+def make_clickable(link):
+    # https://stackoverflow.com/questions/71641666/hyperlink-in-streamlit-dataframe
+    # https://github.com/streamlit/streamlit/issues/983
+    text = link.split("=")[0]
+    return f'<a target="_blank" href="{link}">{text}</a>'
+
+
 def load_global_cases(csv_path):
-    global_cases_df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path)
+    df.index += 1
 
-    global_cases_df["Jurisdictions"] = global_cases_df["Jurisdictions"].apply(
-        preprocess_fields
-    )
-    global_cases_df["Case Categories"] = global_cases_df["Case Categories"].apply(
-        preprocess_fields
-    )
-    global_cases_df["Principal Laws"] = global_cases_df["Principal Laws"].apply(
-        preprocess_fields
-    )
-    global_cases_df["Filing Year"] = pd.to_datetime(
-        global_cases_df["Filing Year"], format="%Y"
+    df["Jurisdictions"] = df["Jurisdictions"].apply(preprocess_fields)
+    df["Case Categories"] = df["Case Categories"].apply(preprocess_fields)
+    df["Principal Laws"] = df["Principal Laws"].apply(preprocess_fields)
+    df["Filing Year"] = pd.to_datetime(df["Filing Year"], format="%Y")
+
+    df["columns_concatenations"] = (
+        df["Title"] + "\n" + df["Summary"] + "\n" + df["Core Object"]
     )
 
-    global_cases_df["columns_concatenations"] = (
-        global_cases_df["Title"] + "\n" + global_cases_df["Summary"]
-    )
+    df["Status"] = df["Status"].astype("category")
 
-    return global_cases_df
+    return df
