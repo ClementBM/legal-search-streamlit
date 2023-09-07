@@ -29,9 +29,10 @@ if "current_selection" not in st.session_state:
 
 def load_data(query: str):
     global_cases_df = load_global_cases(CLIMATE_CASES_CSV)
+    total_count = len(global_cases_df)
 
     if query.strip() == "":
-        return global_cases_df
+        return global_cases_df, total_count
 
     results: typing.List[Document] = index.search(query, search_type="similarity")
     results_ids = [result.metadata["row"] for result in results]
@@ -44,7 +45,10 @@ def load_data(query: str):
         ]
     )
 
-    return global_cases_df.iloc[list(set(results_ids).union(keywords_search_idx))]
+    return (
+        global_cases_df.iloc[list(set(results_ids).union(keywords_search_idx))],
+        total_count,
+    )
 
 
 st.set_page_config(
@@ -59,7 +63,7 @@ st.title("Climate Cases")
 
 with st.sidebar:
     search_query = st.text_input(
-        "Search query", placeholder="Looking for..", key="query"
+        "**Search query**", placeholder="Looking for..", key="query"
     )
 
 df_config: dict = {
@@ -109,10 +113,10 @@ df_config: dict = {
 
 
 with st.spinner(text="In progress"):
-    data = load_data(search_query)
+    data, total_count = load_data(search_query)
 
     with st.sidebar:
-        data = filter_dataframe(data)
+        data, modification_container = filter_dataframe(data)
 
     left_column, right_column = st.columns([2, 1])
 
@@ -169,7 +173,7 @@ with st.spinner(text="In progress"):
         for jurisdiction in df[df.Select]["Jurisdictions"].values[0]:
             right_column.write(jurisdiction)
 
-        right_column.markdown("**Case Categories**")
+        right_column.markdown(f"**Case Categories**")
         for category in df[df.Select]["Case Categories"].values[0]:
             right_column.write(category)
 
@@ -180,4 +184,4 @@ with st.spinner(text="In progress"):
         right_column.markdown("**Reporter Info or Case Number**")
         right_column.write(df[df.Select]["Reporter Info or Case Number"].values[0])
 
-    st.write(f"Result count: {len(df)}")
+    modification_container.markdown(f"*Result count: {len(df)}/{total_count}*")
