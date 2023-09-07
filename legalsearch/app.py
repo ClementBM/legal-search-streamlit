@@ -114,72 +114,70 @@ with st.spinner(text="In progress"):
     with st.sidebar:
         data = filter_dataframe(data)
 
-left_column, right_column = st.columns([2, 1])
+    left_column, right_column = st.columns([2, 1])
 
+    if "case_df" in st.session_state:
+        selected_rows = {
+            k: v["Select"]
+            for k, v in st.session_state["case_df"]["edited_rows"].items()
+            if v["Select"] == True
+        }
 
-if "case_df" in st.session_state:
-    selected_rows = {
-        k: v["Select"]
-        for k, v in st.session_state["case_df"]["edited_rows"].items()
-        if v["Select"] == True
-    }
+        if len(selected_rows) == 0:
+            st.session_state["current_selection"] = None
 
-    if len(selected_rows) == 0:
-        st.session_state["current_selection"] = None
+        if len(selected_rows) > 0:
+            st.session_state["current_selection"] = list(selected_rows.keys())[0]
 
-    if len(selected_rows) > 0:
-        st.session_state["current_selection"] = list(selected_rows.keys())[0]
+    current_id = st.session_state["current_selection"]
 
+    selected_mask = np.zeros(len(data), dtype=bool)
 
-current_id = st.session_state["current_selection"]
+    if current_id != None:
+        selected_mask[current_id] = True
 
-selected_mask = np.zeros(len(data), dtype=bool)
+    data.insert(0, "Select", selected_mask)
 
-if current_id != None:
-    selected_mask[current_id] = True
-
-data.insert(0, "Select", selected_mask)
-
-df = left_column.data_editor(
-    data,
-    height=650,
-    use_container_width=True,
-    column_order=[
-        "Select",
-        "Title",
-        "Filing Year",
-        "Jurisdictions",
-        "Case Categories",
-        "Principal Laws",
-    ],
-    column_config=df_config,
-    hide_index=True,
-    key="case_df",
-)
-
-if sum(df.Select) > 0:
-    right_column.markdown("**Title**")
-    right_column.write(
-        f"<a href='{df[df.Select]['Case Permalink'].values[0]}'>{df[df.Select]['Title'].values[0]}</a>",
-        unsafe_allow_html=True,
+    df = left_column.data_editor(
+        data,
+        height=650,
+        use_container_width=True,
+        column_order=[
+            "Select",
+            "Title",
+            "Filing Year",
+            "Jurisdictions",
+            "Case Categories",
+            "Principal Laws",
+        ],
+        column_config=df_config,
+        hide_index=True,
+        key="case_df",
     )
 
-    right_column.markdown("**Summary**")
-    right_column.write(df[df.Select]["Summary"].values[0])
+    if sum(df.Select) > 0:
+        right_column.markdown("**Title**")
+        right_column.write(
+            f"<a href='{df[df.Select]['Case Permalink'].values[0]}'>{df[df.Select]['Title'].values[0]}</a>",
+            unsafe_allow_html=True,
+        )
 
-    right_column.markdown("**Jurisdictions**")
-    for jurisdiction in df[df.Select]["Jurisdictions"].values[0]:
-        right_column.write(jurisdiction)
+        right_column.markdown("**Summary**")
+        right_column.write(df[df.Select]["Summary"].values[0])
 
-    right_column.markdown("**Case Categories**")
-    for category in df[df.Select]["Case Categories"].values[0]:
-        right_column.write(category)
+        right_column.markdown("**Jurisdictions**")
+        for jurisdiction in df[df.Select]["Jurisdictions"].values[0]:
+            right_column.write(jurisdiction)
 
-    right_column.markdown("**Principal Laws**")
-    for principal in df[df.Select]["Principal Laws"].values[0]:
-        right_column.write(principal)
+        right_column.markdown("**Case Categories**")
+        for category in df[df.Select]["Case Categories"].values[0]:
+            right_column.write(category)
 
-    right_column.markdown("**Reporter Info or Case Number**")
-    right_column.write(df[df.Select]["Reporter Info or Case Number"].values[0])
+        right_column.markdown("**Principal Laws**")
+        for principal in df[df.Select]["Principal Laws"].values[0]:
+            right_column.write(principal)
 
-st.write(f"Result count: {len(df)}")
+        right_column.markdown("**Reporter Info or Case Number**")
+        right_column.write(df[df.Select]["Reporter Info or Case Number"].values[0])
+
+    st.write(f"Result count: {len(df)}")
