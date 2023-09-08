@@ -1,6 +1,5 @@
 from datetime import date
 import numpy as np
-import pandas as pd
 import streamlit as st
 
 from artefacts import CLIMATE_CASES_CSV
@@ -55,7 +54,7 @@ st.set_page_config(
     layout="wide",
     page_icon="⚖️",
     menu_items={
-        "About": "This is just a demo. Get the complete database at: https://climate.law.columbia.edu/",
+        "About": "This is just a demo. Please consider it as toy search engine.\nTo get the complete database: https://climate.law.columbia.edu/",
     },
 )
 
@@ -118,8 +117,6 @@ with st.spinner(text="In progress"):
     with st.sidebar:
         data, modification_container = filter_dataframe(data)
 
-    left_column, right_column = st.columns([2, 1])
-
     if "case_df" in st.session_state:
         selected_rows = {
             k: v["Select"]
@@ -134,6 +131,10 @@ with st.spinner(text="In progress"):
             st.session_state["current_selection"] = list(selected_rows.keys())[0]
 
     current_id = st.session_state["current_selection"]
+
+    left_column, right_column = st.columns([2, 0.01])
+    if current_id != None:
+        left_column, right_column = st.columns([2, 1])
 
     selected_mask = np.zeros(len(data), dtype=bool)
 
