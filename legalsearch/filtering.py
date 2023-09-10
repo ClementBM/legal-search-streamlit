@@ -6,7 +6,6 @@ from pandas.api.types import (
     is_datetime64_any_dtype,
     is_numeric_dtype,
     is_integer_dtype,
-    is_object_dtype,
 )
 
 FILTERABLE_COLUMNS = [
