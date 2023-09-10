@@ -58,11 +58,11 @@ st.set_page_config(
     },
 )
 
-st.title("Climate Cases")
-
 with st.sidebar:
     search_query = st.text_input(
-        "**Search query**", placeholder="Looking for..", key="query"
+        "**Search query**",
+        placeholder="Looking for a specific climate case?",
+        key="query",
     )
 
 df_config: dict = {
