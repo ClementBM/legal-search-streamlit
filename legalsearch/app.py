@@ -5,12 +5,10 @@ import streamlit as st
 from artefacts import CLIMATE_CASES_CSV
 from legalsearch.data_preprocessing import load_global_cases
 from legalsearch.filtering import filter_dataframe
-from legalsearch.indexing import load_vector_index, bm25_search
+from legalsearch.indexing import vector_index, bm25_search
 import typing
 from langchain.schema.document import Document
 
-
-index = load_vector_index()
 
 if "current_selection" not in st.session_state:
     st.session_state["current_selection"] = None
@@ -23,7 +21,9 @@ def load_data(query: str):
     if query.strip() == "":
         return global_cases_df, total_count
 
-    results: typing.List[Document] = index.search(query, search_type="similarity")
+    results: typing.List[Document] = vector_index.search(
+        query, search_type="similarity"
+    )
     results_ids = [result.metadata["row"] for result in results]
 
     bm25_result_ids = bm25_search(query, top_k=20)

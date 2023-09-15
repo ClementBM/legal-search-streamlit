@@ -97,14 +97,13 @@ def prepare_csv_file():
 
 
 def build_vector_index():
-    # Retrieve embedding function from code env resources
     embeddings = HuggingFaceEmbeddings(model_name=LEGAL_BERT_REPO_ID)
 
     loader = CSVLoader(str(NORMED_CLIMATE_CASES_CSV), source_column="Case Permalink")
     documents = loader.load()
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=100, chunk_overlap=20, separators=["\n\n", "\n", ".", " ", ""]
+        chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", ".", " ", ""]
     )
     texts = text_splitter.split_documents(documents)
 
@@ -128,8 +127,9 @@ def load_vector_index():
     return docsearch
 
 
-loaded_index = open_dir(WHOOSH_INDEX_FOLDER_PATH)
+bm25_index = open_dir(WHOOSH_INDEX_FOLDER_PATH)
 climate_cases = pd.read_csv(CLIMATE_CASES_CSV)
+vector_index = vector_index = load_vector_index()
 
 SCHEMA = Schema(
     title=TEXT(stored=True),
@@ -156,7 +156,7 @@ def bm25_search(query, top_k=10):
         schema=SCHEMA,
     ).parse(query)
 
-    with loaded_index.searcher(weighting=scoring.BM25F()) as searcher:
+    with bm25_index.searcher(weighting=scoring.BM25F()) as searcher:
         results = searcher.search(
             q=query_parser,
             limit=top_k,
