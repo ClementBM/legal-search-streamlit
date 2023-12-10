@@ -2,10 +2,10 @@ from datetime import date
 import numpy as np
 import streamlit as st
 
-from artefacts import CLIMATE_CASES_CSV
-from legalsearch.data_preprocessing import load_global_cases
+from legalsearch.data_preprocessing import load_all_cases
 from legalsearch.filtering import filter_dataframe
 from legalsearch.indexing import vector_index, bm25_search
+from legalsearch.models import AggregatedCaseFields
 import typing
 from langchain.schema.document import Document
 
@@ -15,11 +15,12 @@ if "current_selection" not in st.session_state:
 
 
 def load_data(query: str):
-    global_cases_df = load_global_cases(CLIMATE_CASES_CSV)
-    total_count = len(global_cases_df)
+    all_cases_df = load_all_cases()
+
+    total_count = len(all_cases_df)
 
     if query.strip() == "":
-        return global_cases_df, total_count
+        return all_cases_df, total_count
 
     results: typing.List[Document] = vector_index.search(
         query, search_type="similarity"
@@ -29,7 +30,7 @@ def load_data(query: str):
     bm25_result_ids = bm25_search(query, top_k=20)
 
     return (
-        global_cases_df.iloc[list(set(results_ids).union(bm25_result_ids))],
+        all_cases_df.iloc[list(set(results_ids).union(bm25_result_ids))],
         total_count,
     )
 
@@ -50,41 +51,41 @@ with st.sidebar:
     )
 
 df_config: dict = {
-    "Case Permalink": st.column_config.LinkColumn(
-        "Case Permalink",
+    AggregatedCaseFields.PERMALINK: st.column_config.LinkColumn(
+        label=AggregatedCaseFields.PERMALINK,
         width="medium",
         disabled=True,
     ),
-    "Filing Year": st.column_config.DateColumn(
-        "Filing Year",
+    AggregatedCaseFields.FILING_YEAR: st.column_config.DateColumn(
+        label=AggregatedCaseFields.FILING_YEAR,
         min_value=date(1900, 1, 1),
         format="YYYY",
         help="",
         width="small",
         disabled=True,
     ),
-    "Jurisdictions": st.column_config.ListColumn(
-        "Jurisdictions",
+    AggregatedCaseFields.JURISDICTIONS: st.column_config.ListColumn(
+        label=AggregatedCaseFields.JURISDICTIONS,
         help="Jurisdictions",
         width="small",
     ),
-    "Case Categories": st.column_config.ListColumn(
-        "Case Categories",
+    AggregatedCaseFields.CATEGORIES: st.column_config.ListColumn(
+        label=AggregatedCaseFields.CATEGORIES,
         help="Case Categories",
         width="small",
     ),
-    "Principal Laws": st.column_config.ListColumn(
-        "Principal Laws",
+    AggregatedCaseFields.PRINCIPAL_LAWS: st.column_config.ListColumn(
+        label=AggregatedCaseFields.PRINCIPAL_LAWS,
         help="Principal Laws",
         width="small",
     ),
-    "Title": st.column_config.TextColumn(
-        "Title",
+    AggregatedCaseFields.TITLE: st.column_config.TextColumn(
+        label=AggregatedCaseFields.TITLE,
         width="large",
         disabled=True,
     ),
-    "Summary": st.column_config.TextColumn(
-        "Summary",
+    AggregatedCaseFields.SUMMARY: st.column_config.TextColumn(
+        label=AggregatedCaseFields.SUMMARY,
         width="small",
         disabled=True,
     ),
@@ -133,11 +134,11 @@ with st.spinner(text="In progress"):
         use_container_width=True,
         column_order=[
             "Select",
-            "Title",
-            "Filing Year",
-            "Jurisdictions",
-            "Case Categories",
-            "Principal Laws",
+            AggregatedCaseFields.TITLE,
+            AggregatedCaseFields.FILING_YEAR,
+            AggregatedCaseFields.JURISDICTIONS,
+            AggregatedCaseFields.CATEGORIES,
+            AggregatedCaseFields.PRINCIPAL_LAWS,
         ],
         column_config=df_config,
         hide_index=True,
@@ -147,26 +148,26 @@ with st.spinner(text="In progress"):
     if sum(df.Select) > 0:
         right_column.markdown("**Title**")
         right_column.write(
-            f"<a href='{df[df.Select]['Case Permalink'].values[0]}'>{df[df.Select]['Title'].values[0]}</a>",
+            f"<a href='{df[df.Select][AggregatedCaseFields.PERMALINK].values[0]}'>{df[df.Select][AggregatedCaseFields.TITLE].values[0]}</a>",
             unsafe_allow_html=True,
         )
 
         right_column.markdown("**Summary**")
-        right_column.write(df[df.Select]["Summary"].values[0])
+        right_column.write(df[df.Select][AggregatedCaseFields.SUMMARY].values[0])
 
         right_column.markdown("**Jurisdictions**")
-        for jurisdiction in df[df.Select]["Jurisdictions"].values[0]:
+        for jurisdiction in df[df.Select][AggregatedCaseFields.JURISDICTIONS].values[0]:
             right_column.write(jurisdiction)
 
         right_column.markdown(f"**Case Categories**")
-        for category in df[df.Select]["Case Categories"].values[0]:
+        for category in df[df.Select][AggregatedCaseFields.CATEGORIES].values[0]:
             right_column.write(category)
 
         right_column.markdown("**Principal Laws**")
-        for principal in df[df.Select]["Principal Laws"].values[0]:
+        for principal in df[df.Select][AggregatedCaseFields.PRINCIPAL_LAWS].values[0]:
             right_column.write(principal)
 
-        right_column.markdown("**Reporter Info or Case Number**")
-        right_column.write(df[df.Select]["Reporter Info or Case Number"].values[0])
+        # right_column.markdown("**Reporter Info or Case Number**")
+        # right_column.write(df[df.Select]["Reporter Info or Case Number"].values[0])
 
     modification_container.markdown(f"*Result count: {len(df)}/{total_count}*")

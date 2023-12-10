@@ -1,4 +1,5 @@
 import pandas as pd
+from legalsearch.models import AggregatedCaseFields
 import streamlit as st
 
 import pandas as pd
@@ -10,11 +11,11 @@ from pandas.api.types import (
 
 FILTERABLE_COLUMNS = [
     "Status",
-    "Filing Year",
-    "Case Categories",
-    "Jurisdictions",
-    "Principal Laws",
-    "Reporter Info or Case Number",
+    AggregatedCaseFields.FILING_YEAR,
+    AggregatedCaseFields.CATEGORIES,
+    AggregatedCaseFields.JURISDICTIONS,
+    AggregatedCaseFields.PRINCIPAL_LAWS,
+    # "Reporter Info or Case Number",
 ]
 
 
