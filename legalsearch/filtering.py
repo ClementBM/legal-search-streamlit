@@ -86,7 +86,6 @@ def filter_dataframe(df_init: pd.DataFrame) -> pd.DataFrame:
 
     for i, column in enumerate(column_order_names):
         df = apply_filter(
-            df_init,
             df,
             column,
             filter_containers,
@@ -95,7 +94,7 @@ def filter_dataframe(df_init: pd.DataFrame) -> pd.DataFrame:
     return df, modification_container
 
 
-def apply_filter(df_init, df, column, filter_containers):
+def apply_filter(df, column, filter_containers):
     i = FILTERABLE_COLUMNS.index(column)
 
     column_config = st.session_state["filter_configuration"][column]

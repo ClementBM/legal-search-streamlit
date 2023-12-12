@@ -1,9 +1,14 @@
 # Climate Case Search
 
-This is just a demo of a basic search engine.
-Please consider it as toy search engine.
+An easy way to search in the climate case database from the Sabin Center.
 
 To get the complete database: https://climate.law.columbia.edu/
+
+![App Screenshot](artefacts/streamlit-searchengine.png)
+
+# /!\ Warnings
+* Search engine might be very slow on streamlit's free hosting.
+* This is just a demo of a basic search engine. Please consider it as toy search engine.
 
 # For developers
 
